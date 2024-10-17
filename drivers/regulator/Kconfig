@@ -1720,4 +1720,14 @@ config REGULATOR_QCOM_LABIBB
 	  boost regulator and IBB can be used as a negative boost regulator
 	  for LCD display panel.
 
+config REGULATOR_SBI_MPXY
+	bool "RISC-V SBI MPXY Based Regulator Driver"
+	depends on RISCV_SBI || COMPILE_TEST
+	default RISCV
+	help
+	  Support for Regulator based on RISC-V SBI MPXY Extension
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called sbi-mpxy-regulator.
+
 endif
