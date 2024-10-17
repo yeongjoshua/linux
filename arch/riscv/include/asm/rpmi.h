@@ -32,6 +32,7 @@ enum rpmi_error_codes {
 
 #define RPMI_SRVGRP_VOLTAGE		0x6
 #define RPMI_SRVGRP_CLOCK		0x7
+#define RPMI_SRVGRP_DEVICE_POWER	0x8
 
 /* RPMI Voltage Service IDs */
 enum rpmi_voltage_service_id {
@@ -57,6 +58,16 @@ enum rpmi_clock_service_id {
 	RPMI_CLK_SRV_SET_RATE = 0x07,
 	RPMI_CLK_SRV_GET_RATE = 0x08,
 	RPMI_CLK_SRV_ID_MAX_COUNT,
+};
+
+/* RPMI Device Power Service IDs */
+enum rpmi_device_power_service_id {
+	RPMI_DP_SRV_ENABLE_NOTIFICATION = 0x01,	/* PuC event notification */
+	RPMI_DP_SRV_GET_NUM_DOMAINS  = 0x02,	/* get number of power domains */
+	RPMI_DP_SRV_GET_ATTRS = 0x03,		/* get power domain attributes */
+	RPMI_DP_SRV_SET_STATE = 0x04,		/* set power domain state */
+	RPMI_DP_SRV_GET_STATE = 0x05,		/* get power domain state */
+	RPMI_DP_SRV_ID_MAX_COUNT,
 };
 
 #endif /* _ASM_RISCV_RPMI_H */

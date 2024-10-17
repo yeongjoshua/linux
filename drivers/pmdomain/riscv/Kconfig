@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+menu "RISC-V SBI MPXY Based Power Domain Driver"
+
+config RISCV_SBI_MPXY_POWER_DOMAIN
+	tristate "SBI MPXY power domain driver"
+	depends on RISCV_SBI || COMPILE_TEST
+	default RISCV
+	select PM_GENERIC_DOMAINS if PM
+	help
+	  Support for power domains based on RISC-V SBI MPXY Extension
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called sbi-mpxy-pm-domain.
+
+endmenu
+
