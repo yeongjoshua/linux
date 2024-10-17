@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# RISC-V CPU Frequency Scaling drivers
+#
+
+config SBI_MPXY_CPUFREQ
+	tristate "RISC-V SBI MPXY Based CPUFreq driver"
+	depends on RISCV_SBI || COMPILE_TEST
+	default RISCV
+	select PM_OPP
+	help
+	  This adds the CPUfreq driver support for RISC-V platform using SBI
+	  MPXY protocol for CPU power management.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called sbi-rpxy-cpufreq.

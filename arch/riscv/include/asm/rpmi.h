@@ -33,6 +33,7 @@ enum rpmi_error_codes {
 #define RPMI_SRVGRP_VOLTAGE		0x6
 #define RPMI_SRVGRP_CLOCK		0x7
 #define RPMI_SRVGRP_DEVICE_POWER	0x8
+#define RPMI_SRVGRP_PERF		0x9
 
 /* RPMI Voltage Service IDs */
 enum rpmi_voltage_service_id {
@@ -68,6 +69,21 @@ enum rpmi_device_power_service_id {
 	RPMI_DP_SRV_SET_STATE = 0x04,		/* set power domain state */
 	RPMI_DP_SRV_GET_STATE = 0x05,		/* get power domain state */
 	RPMI_DP_SRV_ID_MAX_COUNT,
+};
+
+/* RPMI Perf Service IDs */
+enum rpmi_perf_service_id {
+	RPMI_PERF_SRV_ENABLE_NOTIFICATION = 0x01,
+	RPMI_PERF_SRV_GET_NUM_DOMAINS = 0x02,
+	RPMI_PERF_SRV_GET_DOMAIN_ATTRIBUTES = 0x03,
+	RPMI_PERF_SRV_GET_DOMAIN_LEVELS = 0x04,
+	RPMI_PERF_SRV_GET_PERF_LEVEL = 0x05,
+	RPMI_PERF_SRV_SET_PERF_LEVEL = 0x06,
+	RPMI_PERF_SRV_GET_PERF_LIMIT = 0x07,
+	RPMI_PERF_SRV_SET_PERF_LIMIT = 0x08,
+	RPMI_PERF_SRV_GET_FAST_CHANNEL_ADDR = 0x09,
+	RPMI_PERF_SRV_GET_PERF_HART_LIST = 0x0a,
+	RPMI_PERF_SRV_ID_MAX_COUNT,
 };
 
 #endif /* _ASM_RISCV_RPMI_H */
