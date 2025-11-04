@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config RISCV_RPMI_DEVICE_POWER
+	bool "RISC-V RPMI Based Device Power driver"
+	depends on MAILBOX || COMPILE_TEST
+	default RISCV
+	select PM_GENERIC_DOMAINS if PM
+	help
+	  Support for device power domains based on RISC-V RPMI Extension
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called riscv-rpmi-device-power.
