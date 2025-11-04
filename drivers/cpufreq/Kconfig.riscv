@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# RISC-V CPU Frequency Scaling drivers
+#
+config RISCV_RPMI_CPUFREQ
+	tristate "RISC-V RPMI Based CPUFreq driver"
+	depends on RISCV_SBI || COMPILE_TEST
+	default RISCV
+	select PM_OPP
+	help
+	  This adds the CPUfreq driver support for RISC-V platform using SBI
+	  RPMI protocol for CPU power management.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called riscv-rpmi-cpufreq.

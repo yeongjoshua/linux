@@ -367,4 +367,8 @@ config ACPI_CPPC_CPUFREQ_FIE
 
 endif
 
+if RISCV
+source "drivers/cpufreq/Kconfig.riscv"
+endif
+
 endmenu
