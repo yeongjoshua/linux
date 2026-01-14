@@ -1,0 +1,13 @@
+menu "RISC-V Firmware Drivers"
+
+config RISCV_RPMI_PERFORMANCE
+	tristate "RISC-V RPMI performance service"
+	depends on RISCV_SBI || COMPILE_TEST
+	select MAILBOX
+	select PM_OPP
+	help
+	  This adds support for the RPMI performance service provider,
+	  which exposes performance domains via the SBI MPXY channel or
+	  a dedicated RPMI transport.
+
+endmenu

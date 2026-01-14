@@ -370,9 +370,8 @@ endif
 if RISCV
 config RISCV_RPMI_CPUFREQ
 	tristate "RISC-V RPMI Based CPUFreq driver"
-	depends on RISCV_SBI || COMPILE_TEST
+	depends on RISCV_RPMI_PERFORMANCE && OF
 	default RISCV
-	select PM_OPP
 	help
 	  This adds the CPUfreq driver support for RISC-V platform using SBI
 	  RPMI protocol for CPU power management.

@@ -161,6 +161,13 @@ config ARM_SUN8I_A33_MBUS_DEVFREQ
 	  This adds the DEVFREQ driver for the MBUS controller in some
 	  Allwinner sun8i (A33 through H3) and sun50i (A64 and H5) SoCs.
 
+config RISCV_RPMI_DEVFREQ
+	tristate "RISC-V RPMI Based Devfreq driver"
+	depends on PM_DEVFREQ && RISCV_RPMI_PERFORMANCE && OF
+	help
+	  This adds devfreq support for devices that reference RPMI
+	  performance domains via the performance-domains property.
+
 source "drivers/devfreq/event/Kconfig"
 
 endif # PM_DEVFREQ
