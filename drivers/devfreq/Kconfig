@@ -101,6 +101,20 @@ config ARM_HISI_UNCORE_DEVFREQ
 	  frequency scaling from kernel and userspace. The uncore domain
 	  contains system interconnects and L3 cache.
 
+config RISCV_RPMI_DEVFREQ
+	tristate "RISC-V RPMI performance DEVFREQ Driver"
+	depends on RISCV_RPMI_PERFORMANCE
+	select DEVFREQ_GOV_USERSPACE
+	select DEVFREQ_GOV_PERFORMANCE
+	select DEVFREQ_GOV_POWERSAVE
+	select DEVFREQ_GOV_SIMPLE_ONDEMAND
+	help
+	  This adds a DEVFREQ driver for a device that runs in a performance
+	  domain of the RISC-V platform management interface (RPMI)
+	  performance service group. The device names its domain with a
+	  "performance-domains" phandle and the levels the platform
+	  microcontroller advertises become its operating points.
+
 config ARM_IMX_BUS_DEVFREQ
 	tristate "i.MX Generic Bus DEVFREQ Driver"
 	depends on ARCH_MXC || COMPILE_TEST
