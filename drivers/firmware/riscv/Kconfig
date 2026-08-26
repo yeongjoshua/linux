@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+menu "RISC-V Firmware Drivers"
+	depends on RISCV || COMPILE_TEST
+
+config RISCV_RPMI_PERFORMANCE
+	tristate "RISC-V RPMI performance service group"
+	depends on MAILBOX || COMPILE_TEST
+	default RISCV
+	select PM_OPP
+	help
+	  Support for the performance service group defined by the RISC-V
+	  platform management interface (RPMI) specification. The performance
+	  domains advertised by the platform microcontroller are made available
+	  to whoever drives them: cpufreq for a domain shared by CPUs, and a
+	  device driver, typically through devfreq, for any other IP block.
+	  Consumers reference a domain through the "performance-domains"
+	  property.
+
+endmenu

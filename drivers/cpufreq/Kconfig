@@ -366,4 +366,21 @@ config ACPI_CPPC_CPUFREQ_FIE
 
 endif # CPU_FREQ
 
+if RISCV
+config RISCV_RPMI_CPUFREQ
+	tristate "RISC-V RPMI Based CPUFreq driver"
+	depends on RISCV_SBI || COMPILE_TEST
+	depends on RISCV_RPMI_PERFORMANCE
+	default RISCV
+	select PM_OPP
+	help
+	  This adds the CPUfreq driver support for RISC-V platform using SBI
+	  RPMI protocol for CPU power management. The performance domains it
+	  drives are enumerated by the RPMI performance service group core,
+	  which is what owns the mailbox channel.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called riscv-rpmi-cpufreq.
+endif
+
 endmenu
