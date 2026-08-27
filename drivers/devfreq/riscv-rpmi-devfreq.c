@@ -79,6 +79,142 @@ static void rpmi_devfreq_remove_opps(void *dev)
 	dev_pm_opp_remove_all_dynamic(dev);
 }
 
+#ifdef CONFIG_RISCV_RPMI_DEVFREQ_TEST
+
+/*
+ * Reading cur_freq only exercises the get path, and the platform
+ * microcontroller is free to refuse or to clamp a level it was asked for, so
+ * walk every level the domain advertises and require each one to come back
+ * unchanged. The counterpart of this for the voltage service group lives in
+ * drivers/regulator/riscv-rpmi-regulator-test.c.
+ */
+
+struct rpmi_devfreq_test_result {
+	unsigned int checks;
+	unsigned int failures;
+};
+
+static void rpmi_devfreq_test_check(struct device *dev,
+				    struct rpmi_devfreq_test_result *res,
+				    bool ok, const char *what)
+{
+	res->checks++;
+
+	if (ok) {
+		dev_info(dev, "  PASS %s\n", what);
+		return;
+	}
+
+	res->failures++;
+	dev_err(dev, "  FAIL %s\n", what);
+}
+
+/*
+ * Every level the domain advertises has to be reachable, and reading the
+ * domain back has to report the level that was asked for. A level index the
+ * domain never advertised has to be refused rather than quietly clamped,
+ * which is what tells a caller apart a level it was given from one it was not.
+ */
+static void rpmi_devfreq_test_levels(struct rpmi_devfreq *rd,
+				     struct rpmi_devfreq_test_result *res)
+{
+	struct device *dev = rd->dev;
+	struct rpmi_perf_level level;
+	u32 count, idx, readback;
+	bool set_ok = true, readback_ok = true;
+	int ret;
+
+	count = rpmi_perf_domain_level_count(rd->domain);
+
+	for (idx = 0; idx < count; idx++) {
+		if (rpmi_perf_domain_level_info(rd->domain, idx, &level)) {
+			set_ok = false;
+			break;
+		}
+
+		ret = rpmi_perf_domain_set_level(rd->domain, level.index);
+		if (ret) {
+			dev_err(dev, "       level %u (%u kHz) rejected: %d\n",
+				level.index, level.clock_freq, ret);
+			set_ok = false;
+			continue;
+		}
+
+		ret = rpmi_perf_domain_get_level(rd->domain, &readback);
+		if (ret || readback != level.index) {
+			dev_err(dev, "       level %u read back as %u (%d)\n",
+				level.index, readback, ret);
+			readback_ok = false;
+		}
+	}
+
+	rpmi_devfreq_test_check(dev, res, set_ok, "every advertised level is accepted");
+	rpmi_devfreq_test_check(dev, res, readback_ok,
+				"every level reads back the value that was set");
+
+	/*
+	 * One past the last level the domain advertised. The level table is
+	 * indexed from zero, so this index cannot be one it enumerated.
+	 */
+	ret = rpmi_perf_domain_set_level(rd->domain, count);
+	rpmi_devfreq_test_check(dev, res, ret != 0,
+				"an unadvertised level is refused");
+}
+
+static void rpmi_devfreq_selftest(struct rpmi_devfreq *rd)
+{
+	struct rpmi_devfreq_test_result res = {};
+	struct device *dev = rd->dev;
+	unsigned long freq, initial;
+	u32 count, initial_level;
+	int nr_opp, ret;
+
+	dev_info(dev, "RPMI performance consumer self test\n");
+
+	count = rpmi_perf_domain_level_count(rd->domain);
+
+	ret = rpmi_perf_domain_get_level(rd->domain, &initial_level);
+	rpmi_devfreq_test_check(dev, &res, !ret, "initial level is readable");
+	if (ret)
+		goto done;
+
+	dev_info(dev, "       %s: %u level(s), initial level %u\n",
+		 rpmi_perf_domain_name(rd->domain), count, initial_level);
+
+	rpmi_devfreq_test_check(dev, &res, initial_level < count,
+				"initial level is one the domain advertises");
+
+	nr_opp = dev_pm_opp_get_opp_count(dev);
+	dev_info(dev, "       %s: %d operating point(s) for %u level(s)\n",
+		 rpmi_perf_domain_name(rd->domain), nr_opp, count);
+	rpmi_devfreq_test_check(dev, &res, nr_opp == count,
+				"one operating point per advertised level");
+
+	ret = rpmi_devfreq_get_cur_freq(dev, &initial);
+	rpmi_devfreq_test_check(dev, &res, !ret, "current frequency is readable");
+
+	rpmi_devfreq_test_levels(rd, &res);
+
+	/* Put the domain back where it was found. */
+	ret = rpmi_perf_domain_set_level(rd->domain, initial_level);
+	rpmi_devfreq_test_check(dev, &res, !ret, "initial level is restorable");
+
+	if (!rpmi_devfreq_get_cur_freq(dev, &freq)) {
+		dev_info(dev, "       %s: back at %lu Hz\n",
+			 rpmi_perf_domain_name(rd->domain), freq);
+	}
+
+done:
+	dev_info(dev, "self test done: %u check(s), %u failure(s)\n",
+		 res.checks, res.failures);
+}
+
+#else
+
+static inline void rpmi_devfreq_selftest(struct rpmi_devfreq *rd) { }
+
+#endif /* CONFIG_RISCV_RPMI_DEVFREQ_TEST */
+
 static int rpmi_devfreq_probe(struct platform_device *pdev)
 {
 	struct devfreq_dev_profile *profile;
@@ -141,6 +277,8 @@ static int rpmi_devfreq_probe(struct platform_device *pdev)
 	dev_info(dev, "performance domain %s: %u level(s), running at %lu Hz\n",
 		 rpmi_perf_domain_name(rd->domain),
 		 rpmi_perf_domain_level_count(rd->domain), freq);
+
+	rpmi_devfreq_selftest(rd);
 
 	return 0;
 }
