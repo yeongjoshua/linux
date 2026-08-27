@@ -115,6 +115,18 @@ config RISCV_RPMI_DEVFREQ
 	  "performance-domains" phandle and the levels the platform
 	  microcontroller advertises become its operating points.
 
+config RISCV_RPMI_DEVFREQ_TEST
+	bool "Consumer self test for the RISC-V RPMI performance service"
+	depends on RISCV_RPMI_DEVFREQ
+	help
+	  Walk every level the performance domain advertises at probe time,
+	  set each one and require it to read back unchanged, and report the
+	  result through dmesg. Reading cur_freq only exercises the get path,
+	  so this is what checks that a level asked for is a level given.
+
+	  Intended for bringing up a platform microcontroller or an emulated
+	  one. If in doubt, say N.
+
 config ARM_IMX_BUS_DEVFREQ
 	tristate "i.MX Generic Bus DEVFREQ Driver"
 	depends on ARCH_MXC || COMPILE_TEST
