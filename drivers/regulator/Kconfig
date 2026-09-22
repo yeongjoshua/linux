@@ -1268,6 +1268,54 @@ config REGULATOR_RISCV_RPMI
 	  To compile this driver as a module, choose M here: the
 	  module will be called riscv-rpmi-regulator.
 
+config REGULATOR_RISCV_RPMI_TEST
+	tristate "RISC-V RPMI regulator consumer self test"
+	depends on REGULATOR_RISCV_RPMI
+	help
+	  Consumer side self test for the RISC-V RPMI voltage service group.
+	  It binds to a device tree node naming voltage domains through
+	  "<name>-supply" and checks that reading, enumerating and setting a
+	  voltage behave as the level format of each domain requires, covering
+	  both the discrete and the stepped linear cases.
+
+	  This is only useful for development. If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called riscv-rpmi-regulator-test.
+
+config REGULATOR_RISCV_RPMI_DT_TEST
+	tristate "RISC-V RPMI regulator device tree voltage range self test"
+	depends on REGULATOR_RISCV_RPMI
+	help
+	  Self test for a RISC-V RPMI voltage domain whose permitted range is
+	  set by the device tree, shared by several consumers. Each consumer
+	  node states the range it needs in voltage-range-microvolt, as the MMC
+	  bindings' voltage-ranges does, and the driver asks the supply for it.
+	  Each consumer checks that its request is accepted or refused as the
+	  rail's range and the requests already held allow, and that the rail
+	  stays at the lowest level every held request permits.
+
+	  This is only useful for development. If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called riscv-rpmi-regulator-dt-test.
+
+config REGULATOR_RISCV_RPMI_OPP_TEST
+	tristate "RISC-V RPMI regulator OPP voltage request self test"
+	depends on REGULATOR_RISCV_RPMI && PM_OPP
+	help
+	  Self test for RISC-V RPMI voltage domains whose consumers ask for a
+	  voltage from the device tree, through an OPP table carrying
+	  opp-microvolt. Several consumers share one rail whose node limits
+	  the range it may supply, and each checks that its request is kept,
+	  narrowed, dropped or refused as that range and the requests already
+	  held allow, and that the rail stays inside all of them.
+
+	  This is only useful for development. If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called riscv-rpmi-regulator-opp-test.
+
 config REGULATOR_RK808
 	tristate "Rockchip RK805/RK808/RK809/RK817/RK818 Power regulators"
 	depends on MFD_RK8XX
